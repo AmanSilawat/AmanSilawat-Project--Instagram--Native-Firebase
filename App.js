@@ -5,9 +5,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LandingScreen from './components/auth/Landing';
 import RegisterScreen from './components/auth/Register';
+import MainScreen from './components/Main';
 
 // import * as firebase from 'firebase';
 import firebase from 'firebase';
+
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import rootReducer from './redux/reducers';
+import thunk from 'redux-thunk';
+const store = createStore(rootReducer, applyMiddleware(thunk));
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyD4b7eR0RriTwbrdKlxEE3v5GkR-7qNiJw",
@@ -18,9 +26,6 @@ const firebaseConfig = {
   appId: "1:401847870771:web:cd367c93b7fa30aef8ca46",
   measurementId: "G-505LCVTM44"
 };
-
-console.log('firebase :>> ', firebase);
-console.log('firebase.apps :>> ', firebase.apps);
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
@@ -78,9 +83,9 @@ export class App extends Component {
     }
 
     return (
-      <View style={{ flex: 1, justifyContent: 'center' }}>
-        <Text>User is logged in </Text>
-      </View>
+      <Provider store={store}>
+        <MainScreen />
+      </Provider>
     )
 
   }

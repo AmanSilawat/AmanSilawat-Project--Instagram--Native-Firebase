@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, Button, TextInput } from 'react-native';
-import firebase from 'firebase';
+import firebase from 'firebase'
+import "firebase/firestore";
+
 
 export class Register extends Component {
     constructor(props) {
@@ -13,6 +15,9 @@ export class Register extends Component {
         }
 
         this.onSignUp = this.onSignUp.bind(this);
+
+        var db = firebase.firestore();
+        console.log('firestore__ :>> ', db);
     }
 
     onSignUp() {
@@ -22,6 +27,19 @@ export class Register extends Component {
             .auth()
             .createUserWithEmailAndPassword(email, password)
             .then((result) => {
+
+                console.log('firebase :>> ', firebase);
+                console.log('firebase.firestore :>> ', firebase.firestore);
+
+                firebase
+                    .firestore()
+                    .collection('users')
+                    .doc(firebase.auth().currentUser.uid)
+                    .set({
+                        name,
+                        email
+                    });
+
                 console.log('result :>> ', result);
             })
             .catch((error) => {
