@@ -21,10 +21,10 @@ export class Login extends Component {
             .auth()
             .signInWithEmailAndPassword(email, password)
             .then((result) => {
-                console.log('result :>> ', result);
+                console.log('Login result :>> ', result);
             })
             .catch((error) => {
-                console.log('error :>> ', error);
+                console.log('Login error :>> ', error);
             })
 
     }

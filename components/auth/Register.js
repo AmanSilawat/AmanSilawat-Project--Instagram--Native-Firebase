@@ -17,7 +17,6 @@ export class Register extends Component {
         this.onSignUp = this.onSignUp.bind(this);
 
         var db = firebase.firestore();
-        console.log('firestore__ :>> ', db);
     }
 
     onSignUp() {
@@ -27,10 +26,6 @@ export class Register extends Component {
             .auth()
             .createUserWithEmailAndPassword(email, password)
             .then((result) => {
-
-                console.log('firebase :>> ', firebase);
-                console.log('firebase.firestore :>> ', firebase.firestore);
-
                 firebase
                     .firestore()
                     .collection('users')
@@ -39,11 +34,9 @@ export class Register extends Component {
                         name,
                         email
                     });
-
-                console.log('result :>> ', result);
             })
             .catch((error) => {
-                console.log('error :>> ', error);
+                console.log('Register error :>> ', error);
             })
 
     }

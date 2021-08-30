@@ -15,8 +15,6 @@ export default function Add({ navigation }) {
             const cameraStatus = await Camera.requestPermissionsAsync();
             setHasCameraPermission(cameraStatus.status === 'granted');
 
-            console.log('Platform :>> ', Platform);
-
             if (Platform.OS !== 'web') {
                 const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
                 setHasGalleryPermission(galleryStatus.status !== 'granted')
@@ -41,8 +39,6 @@ export default function Add({ navigation }) {
             quality: 1,
         });
 
-        console.log(result);
-
         if (!result.cancelled) {
             setImage(result.uri);
         }
@@ -52,8 +48,6 @@ export default function Add({ navigation }) {
         return <View />;
     }
     if (hasCameraPermission === false || hasGalleryPermission == false) {
-        console.log('hasCameraPermission :>> ', hasCameraPermission);
-        console.log('hasGalleryPermission :>> ', hasGalleryPermission);
         return <Text>No access to camera</Text>;
     }
     return (

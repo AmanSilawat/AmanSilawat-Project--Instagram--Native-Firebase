@@ -11,8 +11,6 @@ export default function Save(props) {
         const uri = props.route.params.image;
         const childPath = `post/${firebase.auth().currentUser.uid}/${Math.random().toString(36)}`;
 
-        console.log('childPath :>> ', childPath);
-
         const response = await fetch(uri);
         const blob = await response.blob();
 
@@ -23,7 +21,7 @@ export default function Save(props) {
             .put(blob);
 
         const taskProgress = snapshot => {
-            console.log('snapshot.bytesTransferred :>> ', snapshot.bytesTransferred);
+            console.log('snapshot bytesTransferred :>> ', snapshot.bytesTransferred);
         }
 
         const taskCompleted = () => {
@@ -41,16 +39,11 @@ export default function Save(props) {
     }
 
     const savePostData = (downloadURL) => {
-        console.log('downloadURL :>> ', downloadURL);
-        console.log('firebase.firestore.FieldValue :>> ', firebase.firestore.FieldValue.serverTimestamp());
-
         const data = {
             downloadURL,
             caption,
             creation: firebase.firestore.FieldValue.serverTimestamp()
         }
-
-        console.log('data :>> ', data);
 
         firebase
             .firestore()
