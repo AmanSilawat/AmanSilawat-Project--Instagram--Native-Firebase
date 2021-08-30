@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchUser } from './../redux/actions';
+import { fetchUser, fetchUserPosts } from './../redux/actions';
 import FeedScreen from './main/Feed';
 import ProfileScreen from './main/Profile';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,6 +16,7 @@ const EmptyScreen = () => null;
 export class Main extends Component {
     componentDidMount() {
         this.props.fetchUser();
+        this.props.fetchUserPosts();
     }
     render() {
         return (
@@ -77,6 +78,9 @@ export class Main extends Component {
 const mapStateToProps = (store) => ({
     currentUser: store.userState.currentUser
 })
-const mapDispatchToPops = (dispatch) => bindActionCreators({ fetchUser }, dispatch)
+const mapDispatchToPops = (dispatch) => bindActionCreators({
+    fetchUser,
+    fetchUserPosts
+}, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToPops)(Main);
