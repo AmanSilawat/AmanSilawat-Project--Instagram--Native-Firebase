@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchUser, fetchUserPosts } from './../redux/actions';
+import { fetchUser, fetchUserPosts, fetchUserFollowing } from './../redux/actions';
 import firebase from 'firebase';
 
 import FeedScreen from './main/Feed';
@@ -20,6 +20,7 @@ export class Main extends Component {
     componentDidMount() {
         this.props.fetchUser();
         this.props.fetchUserPosts();
+        this.props.fetchUserFollowing();
     }
     render() {
         return (
@@ -105,7 +106,8 @@ const mapStateToProps = (store) => ({
 })
 const mapDispatchToPops = (dispatch) => bindActionCreators({
     fetchUser,
-    fetchUserPosts
+    fetchUserPosts,
+    fetchUserFollowing
 }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToPops)(Main);
