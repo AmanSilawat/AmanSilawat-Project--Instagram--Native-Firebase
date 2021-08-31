@@ -1,4 +1,4 @@
-import { USERS_DATA_STATE_CHANGE, USERS_POST_STATE_CHANGE } from '../constants/index'
+import { USERS_DATA_STATE_CHANGE, USERS_POST_STATE_CHANGE, CLEAR_DATA } from '../constants/index'
 const initialState = {
     users: [],
     usersLoaded: 0
@@ -19,6 +19,12 @@ export const users = (state = initialState, action) => {
                 users: state.users.map(user => user.uid === action.uid
                     ? { ...user, posts: action.posts }
                     : user)
+            }
+
+        case CLEAR_DATA:
+            return {
+                users: [],
+                usersLoaded: 0
             }
 
         default:
