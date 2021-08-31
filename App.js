@@ -17,7 +17,8 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './redux/reducers';
 import thunk from 'redux-thunk';
-const store = createStore(rootReducer, applyMiddleware(thunk));
+import { composeWithDevTools } from 'redux-devtools-extension';
+const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
 
 const firebaseConfig = {
   apiKey: "AIzaSyD4b7eR0RriTwbrdKlxEE3v5GkR-7qNiJw",
