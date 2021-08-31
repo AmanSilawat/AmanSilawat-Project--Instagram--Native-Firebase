@@ -23,6 +23,7 @@ function Feed(props) {
     }, [props.usersFollowingLoaded, props.feed])
 
     const onLikePress = (userId, postId) => {
+        // add current user id in likes document
         firebase
             .firestore()
             .collection('posts')
@@ -32,9 +33,21 @@ function Feed(props) {
             .collection("likes")
             .doc(firebase.auth().currentUser.uid)
             .set({})
+        
+        // likesCount increment by 1
+        firebase
+            .firestore()
+            .collection('posts')
+            .doc(userId)
+            .collection('userPosts')
+            .doc(postId)
+            .update({
+                likesCount: firebase.firestore.FieldValue.increment(1),
+            });
     }
 
     const onDislikePress = (userId, postId) => {
+        // delete current user id in likes document
         firebase
             .firestore()
             .collection('posts')
@@ -44,6 +57,17 @@ function Feed(props) {
             .collection("likes")
             .doc(firebase.auth().currentUser.uid)
             .delete({})
+        
+        // likesCount decrement by 1
+        firebase
+            .firestore()
+            .collection('posts')
+            .doc(userId)
+            .collection('userPosts')
+            .doc(postId)
+            .update({
+                likesCount: firebase.firestore.FieldValue.increment(-1),
+            });
     }
 
     return (
