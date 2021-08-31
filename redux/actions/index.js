@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import { USER_POST_STATE_CHANGE, USER_STATE_CHANGE, USER_FOLLOWING_STATE_CHANGE, USERS_DATA_STATE_CHANGE, USERS_POST_STATE_CHANGE, CLEAR_DATA } from './../constants/';
+import { USER_POST_STATE_CHANGE, USER_STATE_CHANGE, USER_FOLLOWING_STATE_CHANGE, USERS_DATA_STATE_CHANGE, USERS_POST_STATE_CHANGE, CLEAR_DATA, USERS_LIKES_STATE_CHANGE } from './../constants/';
 
 export function clearData() {
     return (dispatch) => {
@@ -58,14 +58,14 @@ export function fetchUserFollowing() {
                 dispatch({ type: USER_FOLLOWING_STATE_CHANGE, following });
 
                 for (let i = 0; i < following.length; i++) {
-                    dispatch(fetchUserData(following[i]))
+                    dispatch(fetchUsersData(following[i], true))
                 }
             })
     }
 }
 
 // users action
-export function fetchUserData(uid) {
+export function fetchUsersData(uid, getPosts) {
     return (dispatch, getState) => {
         const found = getState().usersState.users.some(el => el.uid === uid);
 
@@ -80,11 +80,13 @@ export function fetchUserData(uid) {
                         let user = snapshot.data();
                         user.uid = snapshot.id
                         dispatch({ type: USERS_DATA_STATE_CHANGE, user })
-                        dispatch(fetchUsersFollowingPosts(user.uid))
                     } else {
                         console.log('User does not exist');
                     }
                 })
+            if (getPosts) {
+                dispatch(fetchUsersFollowingPosts(uid))
+            }
         }
     }
 }
@@ -109,9 +111,38 @@ export function fetchUsersFollowingPosts(uid) {
                     return { id, ...data, user }
                 });
 
-                console.log('posts :>> ', posts);
+                for (let i = 0; i < posts.length; i++) {
+                    const currentPost = posts[i];
+
+
+                    dispatch(fetchUsersFollowingLikes(uid, currentPost.id))
+                }
                 dispatch({ type: USERS_POST_STATE_CHANGE, posts, uid });
-                console.log('getState() :>> ', getState());
+            })
+    }
+}
+
+export function fetchUsersFollowingLikes(uid, postId) {
+    return (dispatch, getState) => {
+        firebase
+            .firestore()
+            .collection('posts')
+            .doc(uid)
+            .collection('userPosts')
+            .doc(postId)
+            .collection("likes")
+            .doc(firebase.auth().currentUser.uid)
+            .onSnapshot((snapshot) => {
+                console.log('snapshot :>> ', snapshot);
+                // const postId = snapshot.ZE.path.segments[3];
+                const postId = snapshot._.S_.path.segments[3];
+                let currentUserLike = false;
+
+                if (snapshot.exists) {
+                    currentUserLike = true;
+                }
+
+                dispatch({ type: USERS_LIKES_STATE_CHANGE, postId, currentUserLike });
             })
     }
 }

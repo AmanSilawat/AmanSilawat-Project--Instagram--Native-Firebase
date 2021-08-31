@@ -5,23 +5,46 @@ import firebase from 'firebase';
 // import 'firebase/firebase-storage';
 
 function Feed(props) {
-
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        let posts = [];
-        if (props.usersLoaded == props.following.length) {
-            for (let i = 0; i < props.following.length; i++) {
-                const user = props.users.find(el => el.uid === props.following[i]);
-                if (user != undefined) {
-                    posts = [...posts, ...user.posts]
-                }
-            }
+        // let posts = [];
+        if (props.usersFollowingLoaded == props.following.length && props.following.length !== 0) {
+            // for (let i = 0; i < props.following.length; i++) {
+            //     const user = props.users.find(el => el.uid === props.following[i]);
+            //     if (user != undefined) {
+            //         posts = [...posts, ...user.posts]
+            //     }
+            // }
 
-            posts.sort((x, y) => x.creation - y.creation);
-            setPosts(posts);
+            props.feed.sort((x, y) => x.creation - y.creation);
+            setPosts(props.feed);
         }
-    }, [props.usersLoaded])
+    }, [props.usersFollowingLoaded, props.feed])
+
+    const onLikePress = (userId, postId) => {
+        firebase
+            .firestore()
+            .collection('posts')
+            .doc(userId)
+            .collection('userPosts')
+            .doc(postId)
+            .collection("likes")
+            .doc(firebase.auth().currentUser.uid)
+            .set({})
+    }
+
+    const onDislikePress = (userId, postId) => {
+        firebase
+            .firestore()
+            .collection('posts')
+            .doc(userId)
+            .collection('userPosts')
+            .doc(postId)
+            .collection("likes")
+            .doc(firebase.auth().currentUser.uid)
+            .delete({})
+    }
 
     return (
         <View style={styles.container}>
@@ -32,11 +55,41 @@ function Feed(props) {
                     data={posts}
                     renderItem={({ item }) => (
                         <View style={styles.containerImage}>
-                            <Text style={styles.container}>{item.user.name}</Text>
+                            <Text style={styles.container}>{item?.user?.name}</Text>
                             <Image
                                 source={{ uri: item.downloadURL }}
                                 style={styles.image}
                             />
+                            {/* <Text
+                                onPress={() => (
+                                    props.navigation.navigate('Comments', {
+                                        postId: item.id,
+                                        uid: item.user.uid
+                                    })
+                                )}
+                            >
+                                View Comments...
+                            </Text> */}
+
+                            {item.currentUserLike
+                                ? (
+                                    <Button
+                                        title="Dislike"
+                                        onPress={() => onDislikePress(item.user.uid, item.id)}
+                                    />
+                                )
+                                : (
+                                    <Button
+                                        title="Like"
+                                        onPress={() => onLikePress(item.user.uid, item.id)}
+                                    />
+                                )
+                            }
+
+                            <Text
+                                onPress={() => props.navigation.navigate('Comment', { postId: item.id, uid: item.user.uid })}>
+                                View Comments...
+                            </Text>
                         </View>
                     )}
                 />
@@ -69,8 +122,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (store) => ({
     currentUser: store.userState.currentUser,
     following: store.userState.following,
-    users: store.usersState.users,
-    usersLoaded: store.usersState.usersLoaded
+    feed: store.usersState.feed,
+    usersFollowingLoaded: store.usersState.usersFollowingLoaded
 })
 
 
